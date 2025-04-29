@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تغيير خلفية الصفحة</title>
+    <style>
+        /* CSS */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease-in-out;
+        }
+
+        h1 {
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-size: 3em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>مرحبًا! خلفية الصفحة تتغير عشوائيًا.</h1>
+    <button onclick="goBack()">العودة</button>
+
+    <script>
+
+            
+function goBack() {
+            window.history.back();
+        }
+
+
+// JavaScript
+        const images = [
+            'https://source.unsplash.com/1600x900/?nature,water',
+            'https://source.unsplash.com/1600x900/?mountains',
+            'https://source.unsplash.com/1600x900/?city,night',
+            'https://source.unsplash.com/1600x900/?forest',
+            'https://source.unsplash.com/1600x900/?sky,clouds',
+            'https://source.unsplash.com/1600x900/?desert',
+            'https://source.unsplash.com/1600x900/?animals',
+            'https://source.unsplash.com/1600x900/?space',
+        ];
+
+        // تحميل الصور مسبقًا لتحسين الأداء
+        function preloadImages(urls) {
+            urls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+            });
+        }
+
+        // تغيير خلفية الصفحة بشكل عشوائي
+        function setRandomBackground() {
+            const randomImage = images[Math.floor(Math.random() * images.length)];
+            document.body.style.backgroundImage = `url('${randomImage}')`;
+        }
+
+        // تحميل الصور مسبقًا عند تحميل الصفحة
+        window.onload = () => {
+            preloadImages(images);
+            setRandomBackground();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساعة توقيت مع لفات</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #display {
+            font-size: 3em;
+            margin: 20px 0;
+            color: #28a745;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #laps {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: white;
+        }
+        .lap-item {
+            padding: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>ساعة توقيت مع لفات</h1>
+    <div id="display">00:00:00</div>
+    <button id="startStopButton">بدء</button>
+    <button id="lapButton" disabled>لفة</button>
+    <button id="resetButton">إعادة تعيين</button>
+    <div id="laps"></div>
+
+    <button onclick="goBack()">العودة</button>
+
+    <script>
+
+            
+function goBack() {
+            window.history.back();
+        }
+
+
+
+
+let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+        let isRunning = false;
+
+        const display = document.getElementById('display');
+        const startStopButton = document.getElementById('startStopButton');
+        const lapButton = document.getElementById('lapButton');
+        const resetButton = document.getElementById('resetButton');
+        const lapsContainer = document.getElementById('laps');
+
+        // تحديث العرض كل 10 مللي ثانية
+        function updateDisplay() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            display.textContent = formatTime(elapsedTime);
+        }
+
+        // تنسيق الوقت من المللي ثانية إلى تنسيق ساعة:دقيقة:ثانية
+        function formatTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // بدء أو إيقاف التوقيت
+        startStopButton.addEventListener('click', () => {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                startStopButton.textContent = 'بدء';
+                lapButton.disabled = true;
+            } else {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+                startStopButton.textContent = 'إيقاف';
+                lapButton.disabled = false;
+            }
+            isRunning = !isRunning;
+        });
+
+        // تسجيل لفة
+        lapButton.addEventListener('click', () => {
+            const lapTime = formatTime(elapsedTime);
+            const lapItem = document.createElement('div');
+            lapItem.className = 'lap-item';
+            lapItem.textContent = `اللفة ${lapsContainer.children.length + 1}: ${lapTime}`;
+            lapsContainer.appendChild(lapItem);
+        });
+
+        // إعادة تعيين التوقيت
+        resetButton.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            display.textContent = '00:00:00';
+            startStopButton.textContent = 'بدء';
+            lapButton.disabled = true;
+            lapsContainer.innerHTML = '';
+            elapsedTime = 0;
+            isRunning = false;
+        });
+    </script>
+</body>
+</html>

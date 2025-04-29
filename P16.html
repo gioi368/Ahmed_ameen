@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>مؤقت بومودورو</title>
+    <style>
+        body {
+          background:black;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            direction: rtl;
+        }
+        #timer {
+            font-size: 80px;
+            margin: 20px;
+            padding: 20px;
+            background: #eee;
+            border-radius: 10px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="timer">25:00</div>
+    <button id="startBtn">بدء</button>
+    <button id="stopBtn">إيقاف</button>
+    <button id="resetBtn">إعادة تعيين</button>
+    <br>
+    <button onclick="goBack()">العودة</button>
+    
+    <script>
+        
+    function goBack() {
+    window.history.back();
+}
+        let timerId = null;
+        let isRunning = false;
+        let isWorkTime = true;
+        const workDuration = 25 * 60;
+        const breakDuration = 5 * 60;  
+        let currentTime = workDuration;
+
+        const timerDisplay = document.getElementById('timer');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function updateDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            timerId = setInterval(() => {
+                currentTime--;
+                updateDisplay();
+                
+                if (currentTime <= 0) {
+                    clearInterval(timerId);
+                    isRunning = false;
+                    isWorkTime = !isWorkTime;
+                    currentTime = isWorkTime ? workDuration : breakDuration;
+                    updateDisplay();
+                    startTimer(); 
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerId);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            clearInterval(timerId);
+            isRunning = false;
+            isWorkTime = true;
+            currentTime = workDuration;
+            updateDisplay();
+        }
+
+       
+        startBtn.addEventListener('click', startTimer);
+        stopBtn.addEventListener('click', stopTimer);
+        resetBtn.addEventListener('click', resetTimer);
+
+        
+        updateDisplay();
+    </script>
+</body>
+</html>

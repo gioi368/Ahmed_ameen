@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدير النفقات</title>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input, select, button {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .expenses-list {
+            margin-top: 30px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .expense-details {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .category-tag {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .total {
+            text-align: center;
+            font-size: 1.5em;
+            color: #27ae60;
+            margin-top: 20px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>مدير النفقات الشخصية</h1>
+        
+        <div class="input-section">
+            <input type="text" id="expenseName" placeholder="وصف النفقة">
+            <input type="number" id="expenseAmount" placeholder="المبلغ">
+            <select id="expenseCategory">
+                <option value="عام">عام</option>
+                <option value="طعام">طعام</option>
+                <option value="مواصلات">مواصلات</option>
+                <option value="سكن">سكن</option>
+                <option value="ترفيه">ترفيه</option>
+            </select>
+            <button   onclick="addExpense()">إضافة</button>
+        </div>
+
+        <div class="expenses-list" id="expensesList"></div>
+        <div class="total">المجموع: <span id="totalAmount">0</span> د.ع</div>
+    </div>
+<button   class="expenses"onclick="goBack()">العودة</button>
+
+    <script>
+    function goBack() {
+    window.history.back();
+}
+    
+    
+    
+    
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        
+        function addExpense() {
+            const name = document.getElementById('expenseName').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+
+            if (!name || !amount) {
+                alert('الرجاء ملء جميع الحقول');
+                return;
+            }
+
+            const newExpense = {
+                id: Date.now(),
+                name,
+                amount,
+                category,
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+
+            expenses.push(newExpense);
+            saveToLocalStorage();
+            renderExpenses();
+            clearInputs();
+        }
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(expense => expense.id !== id);
+            saveToLocalStorage();
+            renderExpenses();
+        }
+
+        function renderExpenses() {
+            const list = document.getElementById('expensesList');
+            const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            
+            list.innerHTML = '';
+            document.getElementById('totalAmount').textContent = total.toLocaleString();
+
+            expenses.forEach(expense => {
+                const item = document.createElement('div');
+                item.className = 'expense-item';
+                item.innerHTML = `
+                    <div class="expense-details">
+                        <h3>${expense.name}</h3>
+                        <small>${expense.date}</small>
+                    </div>
+                    <div class="category-tag" style="background: ${getCategoryColor(expense.category)}">
+                        ${expense.category}
+                    </div>
+                    <div class="amount">${expense.amount.toLocaleString()} د.ع</div>
+                    <button class="delete-btn" onclick="deleteExpense(${expense.id})">حذف</button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function getCategoryColor(category) {
+            const colors = {
+                'عام': '#95a5a6',
+                'طعام': '#e67e22',
+                'مواصلات': '#3498db',
+                'سكن': '#9b59b6',
+                'ترفيه': '#2ecc71'
+            };
+            return colors[category] || '#95a5a6';
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+
+        function clearInputs() {
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+        }
+
+        // التحميل الأولي
+        renderExpenses();
+    </script>
+</body>
+</html>

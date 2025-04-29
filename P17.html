@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>عداد الأحرف مع الحدود</title>
+    <style>
+        body {
+            direction: rtl;
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        textarea:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .counter {
+            font-size: 14px;
+            color: #666;
+            text-align: left;
+        }
+
+        .counter.limit-exceeded {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #ff9800;
+            display: none;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>أدخل النص (الحد الأقصى 280 حرفًا)</h2>
+        <textarea 
+            id="textInput" 
+            placeholder="اكتب نصك هنا..." 
+            maxlength="280"
+        ></textarea>
+        <div class="counter" id="counter">280/280</div>
+        <div class="warning" id="warning">!لقد وصلت إلى الحد الأقصى</div>
+    </div>
+
+    <br>
+    <button onclick="goBack()">العودة</button>
+    
+
+
+    <script>
+        
+    function goBack() {
+    window.history.back();
+}
+
+const textInput = document.getElementById('textInput');
+        const counter = document.getElementById('counter');
+        const warning = document.getElementById('warning');
+        const MAX_LENGTH = 280;
+
+        function updateCounter() {
+            const currentLength = textInput.value.length;
+            const remaining = MAX_LENGTH - currentLength;
+            
+          
+            counter.textContent = `${remaining}/${MAX_LENGTH}`;
+            
+            if (remaining < 0) {
+                counter.classList.add('limit-exceeded');
+                warning.style.display = 'block';
+            } else if (remaining <= 20) {
+                counter.style.color = '#ff9800';
+                warning.style.display = 'none';
+            } else {
+                counter.style.color = '#666';
+                counter.classList.remove('limit-exceeded');
+                warning.style.display = 'none';
+            }
+        }
+
+        function enforceLimit(e) {
+            const currentLength = textInput.value.length;
+            
+            if (currentLength >= MAX_LENGTH && e.key !== 'Backspace' && e.key !== 'Delete') {
+                e.preventDefault();
+            }
+        }
+
+      
+        textInput.addEventListener('input', updateCounter);
+        textInput.addEventListener('keydown', enforceLimit);
+        textInput.addEventListener('paste', (e) => {
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            if (textInput.value.length + pastedText.length > MAX_LENGTH) {
+                e.preventDefault();
+                alert('!النص الملصق يتجاوز الحد المسموح');
+            }
+        });
+
+        
+        updateCounter();
+    </script>
+</body>
+</html>

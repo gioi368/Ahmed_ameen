@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حاسبة رياضية</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            width: 320px;
+        }
+
+        #display {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 20px;
+            background: #404040;
+            border: none;
+            border-radius: 10px;
+            font-size: 36px;
+            color: #fff;
+            text-align: left;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .number {
+            background: #4d4d4d;
+            color: white;
+        }
+
+        .operator {
+            background: #ff9500;
+            color: white;
+        }
+
+        .equal {
+            background: #007AFF;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear {
+            background: #ff3b30;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" id="display" readonly>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="operator" onclick="appendOperator('/')">/</button>
+            <button class="operator" onclick="appendOperator('*')">×</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+            
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+            
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="number" onclick="appendNumber('.')">.</button>
+            
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="number" onclick="appendNumber('0')">0</button>
+            
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+        
+         <button   class="calculator"onclick="goBack()">العودة</button>
+
+        
+        
+    </div>
+    
+    
+    <script>
+    function goBack() {
+    window.history.back();
+}
+    
+        let display = document.getElementById('display');
+        let currentNumber = '';
+        let prevNumber = '';
+        let operation = null;
+
+        function appendNumber(num) {
+            if (currentNumber.length >= 15) return;
+            if (num === '.' && currentNumber.includes('.')) return;
+            currentNumber += num;
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (currentNumber === '') return;
+            if (prevNumber !== '') calculate();
+            operation = op;
+            prevNumber = currentNumber;
+            currentNumber = '';
+            updateDisplay();
+        }
+
+        function calculate() {
+            if (prevNumber === '' || currentNumber === '') return;
+            
+            let result;
+            const prev = parseFloat(prevNumber);
+            const current = parseFloat(currentNumber);
+
+            switch(operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = current === 0 ? 'خطأ!' : prev / current;
+                    break;
+            }
+
+            currentNumber = result.toString();
+            operation = null;
+            prevNumber = '';
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentNumber = '';
+            prevNumber = '';
+            operation = null;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            display.value = prevNumber + (operation || '') + currentNumber;
+        }
+    </script>
+</body>
+</html>

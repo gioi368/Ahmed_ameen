@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض شرائح الصور</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .slider-container {
+            position: relative;
+            width: 800px;
+            max-width: 95%;
+            height: 500px;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .slider {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+        }
+
+        .prev-btn, .next-btn {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            padding: 12px 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .prev-btn:hover, .next-btn:hover {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: rgba(255,255,255,0.9);
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <div class="slider">
+            <div class="slide">
+                <img src="r8.jpg" alt="الطبيعة">
+                <div class="caption">جمال الطبيعة الخلابة</div>
+            </div>
+            <div class="slide">
+                <img src="r22.jpg" alt="المدينة">
+                <div class="caption">حضارة المدنية الحديثة</div>
+            </div>
+            <div class="slide">
+                <img src="r18.jpg" alt="التكنولوجيا">
+                <div class="caption">التطور التكنولوجي</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="prev-btn">❮</button>
+            <button class="next-btn">❯</button>
+        </div>
+
+        <div class="dots"></div>
+        
+    </div>
+    <button   class="dots"onclick="goBack()">العودة</button>
+
+
+    <script>
+    
+    function goBack() {
+    window.history.back();
+}
+    
+    
+        const slider = document.querySelector('.slider');
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.querySelector('.dots');
+        let currentIndex = 0;
+        let autoSlideInterval;
+
+        // إنشاء نقاط التمرير
+        slides.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => goToSlide(index));
+            dotsContainer.appendChild(dot);
+        });
+
+        // التحكم بالأسهم
+        document.querySelector('.prev-btn').addEventListener('click', prevSlide);
+        document.querySelector('.next-btn').addEventListener('click', nextSlide);
+
+        // التمرير التلقائي
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+        }
+
+        function goToSlide(index) {
+            currentIndex = index;
+            updateSlider();
+            resetAutoSlide();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex > 0) ? currentIndex - 1 : slides.length - 1;
+            updateSlider();
+            resetAutoSlide();
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex < slides.length - 1) ? currentIndex + 1 : 0;
+            updateSlider();
+            resetAutoSlide();
+        }
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        // بدء التمرير التلقائي
+        startAutoSlide();
+
+        // إيقاف التمرير التلقائي عند تحريك الماوس فوق الشريحة
+        slider.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+        slider.addEventListener('mouseleave', startAutoSlide);
+    </script>
+</body>
+</html>

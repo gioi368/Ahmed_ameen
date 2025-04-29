@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساعة الإيقاف</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+        }
+
+        .stopwatch {
+            text-align: center;
+            background: #2d2d2d;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.4);
+        }
+
+        #display {
+            font-size: 4em;
+            color: #fff;
+            margin-bottom: 30px;
+            font-family: monospace;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: 0.3s;
+            color: white;
+        }
+
+        #startBtn {
+            background: #27ae60;
+        }
+
+        #stopBtn {
+            background: #c0392b;
+        }
+
+        #resetBtn {
+            background: #2980b9;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div id="display">00:00:00.00</div>
+        <div class="controls">
+            <button id="startBtn">بدء</button>
+            <button id="stopBtn">إيقاف</button>
+            <button id="resetBtn">إعادة ضبط</button>
+        </div><br>
+        <button   class="stopwatch"onclick="goBack()">العودة</button>
+
+    </div>
+
+    <script>
+    
+    function goBack() {
+    window.history.back();
+}
+        let startTime = 0;
+        let elapsedTime = 0;
+        let timerInterval = null;
+        const display = document.getElementById('display');
+        
+        function formatTime(time) {
+            const hours = Math.floor(time / 3600000);
+            const minutes = Math.floor((time % 3600000) / 60000);
+            const seconds = Math.floor((time % 60000) / 1000);
+            const centiseconds = Math.floor((time % 1000) / 10);
+            
+            return `
+                ${hours.toString().padStart(2, '0')}:
+                ${minutes.toString().padStart(2, '0')}:
+                ${seconds.toString().padStart(2, '0')}.
+                ${centiseconds.toString().padStart(2, '0')}
+            `;
+        }
+
+        function updateDisplay() {
+            const currentTime = Date.now();
+            elapsedTime = currentTime - startTime;
+            display.textContent = formatTime(elapsedTime);
+        }
+
+        function start() {
+            if (!timerInterval) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(updateDisplay, 10);
+            }
+        }
+
+        function stop() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function reset() {
+            stop();
+            elapsedTime = 0;
+            display.textContent = formatTime(0);
+        }
+
+        // Event Listeners
+        document.getElementById('startBtn').addEventListener('click', start);
+        document.getElementById('stopBtn').addEventListener('click', stop);
+        document.getElementById('resetBtn').addEventListener('click', reset);
+    </script>
+</body>
+</html>

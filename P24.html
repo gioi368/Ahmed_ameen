@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحويل النص إلى كلام</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            margin: 50px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 80%;
+            height: 100px;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .warning {
+            color: #dc3545;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>تحويل النص إلى كلام</h1>
+    <textarea id="text-input" placeholder="اكتب النص هنا..."></textarea>
+    <br>
+    <button id="speak-button" onclick="speakText()">تكلم</button>
+    <p id="warning" class="warning"></p>
+    <br>
+    <button onclick="goBack()">العودة</button>
+    
+
+    <script>
+        
+        function goBack() {
+            window.history.back();
+        }
+
+        // التحقق من دعم المتصفح لواجهة Web Speech API
+        const warningElement = document.getElementById('warning');
+        const speakButton = document.getElementById('speak-button');
+        let isSupported = true;
+
+        if (!('speechSynthesis' in window)) {
+            warningElement.textContent = 'عذرًا، المتصفح الخاص بك لا يدعم تحويل النص إلى كلام.';
+            speakButton.disabled = true;
+            isSupported = false;
+        }
+
+        // دالة لتحويل النص إلى كلام
+        function speakText() {
+            if (!isSupported) return;
+
+            const textInput = document.getElementById('text-input').value;
+            if (textInput.trim() === "") {
+                warningElement.textContent = "الرجاء إدخال نص لتحويله إلى كلام.";
+                return;
+            }
+
+            warningElement.textContent = ""; // إزالة أي تحذيرات سابقة
+
+            // إنشاء كائن SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(textInput);
+
+            // تعيين اللغة إلى العربية (إذا كانت مدعومة)
+            utterance.lang = 'en-us'; // العربية - السعودية
+
+            // بدء النطق
+            window.speechSynthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة الرسم البسيطة</title>
+    <style>
+        /* CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            border: 2px solid #333;
+            background-color: #fff;
+            cursor: crosshair;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>لوحة الرسم البسيطة</h1>
+    <canvas id="drawingCanvas" width="800" height="500"></canvas>
+    <div class="controls">
+        <button onclick="clearCanvas()">مسح اللوحة</button>
+    
+    
+        <br>
+        <button  class="result" style="margin: 10px;" onclick="goBack()">العودة</button>
+    
+    </div>
+    
+    <script>
+  
+  
+            
+function goBack() {
+            window.history.back();
+        }
+  
+  // JavaScript
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let isDrawing = false;
+
+        // بدء الرسم عند النقر بالماوس
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
+
+        // الرسم عند تحريك الماوس
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+        });
+
+        // إيقاف الرسم عند رفع الماوس
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+            ctx.closePath();
+        });
+
+        // إيقاف الرسم عند مغادرة اللوحة
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+
+        // مسح اللوحة
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>

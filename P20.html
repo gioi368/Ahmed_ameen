@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>حاسبة مؤشر كتلة الجسم</title>
+    <style>
+        body {
+            direction: rtl;
+            font-family: 'Tajawal', sans-serif;
+            background: #f0f3f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .unit-switch {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .unit-option {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .unit-option.active {
+            border-color: #3498db;
+            background: #f0f8ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>حاسبة مؤشر كتلة الجسم (BMI)</h2>
+        
+        <div class="unit-switch">
+            <div class="unit-option active" data-type="metric" onclick="switchUnits('metric')">النظام المتري</div>
+            <div class="unit-option" data-type="imperial" onclick="switchUnits('imperial')">النظام الإمبراطوري</div>
+        </div>
+
+        <div class="input-group metric">
+            <label for="height">الطول (سم)</label>
+            <input type="number" id="height" step="0.1" placeholder="أدخل الطول بالسنتيمتر">
+            <div class="error" id="heightError">الرجاء إدخال قيمة بين 50 و 300 سم</div>
+        </div>
+
+        <div class="input-group metric">
+            <label for="weight">الوزن (كجم)</label>
+            <input type="number" id="weight" step="0.1" placeholder="أدخل الوزن بالكيلوجرام">
+            <div class="error" id="weightError">الرجاء إدخال قيمة بين 10 و 500 كجم</div>
+        </div>
+
+        <div class="input-group imperial" style="display: none;">
+            <label for="heightImp">الطول (قدم وبوصة)</label>
+            <div style="display: flex; gap: 1rem;">
+                <input type="number" id="feet" placeholder="قدم" min="3" max="8">
+                <input type="number" id="inches" placeholder="بوصة" min="0" max="11">
+            </div>
+            <div class="error" id="heightImpError">الرجاء إدخال طول بين 3 و 8 أقدام</div>
+        </div>
+
+        <div class="input-group imperial" style="display: none;">
+            <label for="weightImp">الوزن (رطل)</label>
+            <input type="number" id="weightImp" placeholder="أدخل الوزن بالرطل">
+            <div class="error" id="weightImpError">الرجاء إدخال قيمة بين 20 و 1000 رطل</div>
+        </div>
+
+        <button onclick="calculateBMI()">احسب الآن</button>
+        
+        <div class="result" id="result">
+            <div id="bmiValue"></div>
+            <div id="bmiCategory"></div>
+            <div id="bmiChart" style="margin-top: 1rem;">
+                <div style="background: #27ae60; height: 8px; border-radius: 4px; margin: 0.5rem 0;"></div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span>نقص الوزن</span>
+                    <span>طبيعي</span>
+                    <span>زيادة وزن</span>
+                    <span>سمنة</span>
+                </div>
+            </div>
+        </div>
+          
+    <br>
+    <button   style="margin: 10px;" onclick="goBack()">العودة</button>
+  
+    </div>
+    
+    
+
+    <script>
+        
+    function goBack() {
+    window.history.back();
+}
+        let currentUnit = 'metric';
+
+        function switchUnits(unit) {
+            currentUnit = unit;
+            document.querySelectorAll('.unit-option').forEach(opt => 
+                opt.classList.remove('active'));
+            document.querySelector(`[data-type="${unit}"]`).classList.add('active');
+            
+            document.querySelectorAll('.input-group').forEach(group => 
+                group.style.display = 'none');
+            document.querySelectorAll(`.${unit}`).forEach(group => 
+                group.style.display = 'block');
+        }
+
+        function validateInputs() {
+            let isValid = true;
+            
+            if(currentUnit === 'metric') {
+                const height = parseFloat(document.getElementById('height').value);
+                const weight = parseFloat(document.getElementById('weight').value);
+                
+                if(isNaN(height) || height < 50 || height > 300) {
+                    document.getElementById('heightError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('heightError').style.display = 'none';
+                }
+                
+                if(isNaN(weight) || weight < 10 || weight > 500) {
+                    document.getElementById('weightError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('weightError').style.display = 'none';
+                }
+            }
+            else {
+                const feet = parseInt(document.getElementById('feet').value);
+                const inches = parseInt(document.getElementById('inches').value);
+                const weight = parseFloat(document.getElementById('weightImp').value);
+                
+                if(isNaN(feet) {
+                    document.getElementById('heightImpError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('heightImpError').style.display = 'none';
+                }
+                
+                if(isNaN(weight) || weight < 20 || weight > 1000) {
+                    document.getElementById('weightImpError').style.display = 'block';
+                    isValid = false;
+                } else {
+                    document.getElementById('weightImpError').style.display = 'none';
+                }
+            }
+            
+            return isValid;
+        }
+
+        function calculateBMI() {
+            if(!validateInputs()) return;
+            
+            let height, weight;
+            
+            if(currentUnit === 'metric') {
+                height = parseFloat(document.getElementById('height').value) / 100; // تحويل سم إلى متر
+                weight = parseFloat(document.getElementById('weight').value);
+            } else {
+                const feet = parseInt(document.getElementById('feet').value);
+                const inches = parseInt(document.getElementById('inches').value) || 0;
+                height = (feet * 12 + inches) * 0.0254; // تحويل إلى متر
+                weight = parseFloat(document.getElementById('weightImp').value) * 0.453592; // تحويل رطل إلى كجم
+            }
+            
+            const bmi = weight / (height * height);
+            displayResult(bmi);
+        }
+
+        function displayResult(bmi) {
+            const resultDiv = document.getElementById('result');
+            const bmiValue = document.getElementById('bmiValue');
+            const bmiCategory = document.getElementById('bmiCategory');
+            
+            resultDiv.style.display = 'block';
+            bmiValue.textContent = `مؤشر كتلة الجسم: ${bmi.toFixed(1)}`;
+            
+            let category = '';
+            if(bmi < 18.5) {
+                category = 'نقص في الوزن';
+                resultDiv.style.backgroundColor = '#f8e71c';
+            } else if(bmi < 25) {
+                category = 'وزن طبيعي';
+                resultDiv.style.backgroundColor = '#7ed321';
+            } else if(bmi < 30) {
+                category = 'زيادة في الوزن';
+                resultDiv.style.backgroundColor = '#f5a623';
+            } else {
+                category = 'سمنة';
+                resultDiv.style.backgroundColor = '#d0021b';
+            }
+            
+            bmiCategory.textContent = `التصنيف: ${category}`;
+        }
+    </script>
+</body>
+</html>

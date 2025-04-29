@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>مولد كلمات مرور قوية</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --success: #4CAF50;
+            --background: #f5f5f5;
+        }
+
+        body {
+            direction: rtl;
+            font-family: 'Tajawal', sans-serif;
+            background: var(--background);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .controls {
+            margin-bottom: 1.5rem;
+        }
+
+        .range-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .checkboxes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        #password {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+            direction: ltr;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .strength-meter {
+            height: 8px;
+            border-radius: 4px;
+            margin: 1rem 0;
+            background: #ddd;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin: 1rem 0;
+            display: none;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            background: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>مولد كلمات المرور الآمنة</h1>
+        
+        <div class="controls">
+            <div class="range-group">
+                <label for="length">طول كلمة المرور: <span id="lengthValue">12</span></label>
+                <input type="range" id="length" min="4" max="64" value="12">
+            </div>
+
+            <div class="checkboxes">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="uppercase" checked>
+                    <label for="uppercase">أحرف كبيرة (A-Z)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lowercase" checked>
+                    <label for="lowercase">أحرف صغيرة (a-z)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="numbers" checked>
+                    <label for="numbers">أرقام (0-9)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="symbols">
+                    <label for="symbols">رموز (!@#$%^)</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="strength-meter">
+            <div class="strength-fill" id="strengthFill"></div>
+        </div>
+
+        <div class="error" id="error">الرجاء اختيار خيار واحد على الأقل!</div>
+
+        <div class="result">
+            <input type="text" id="password" readonly>
+            <button onclick="generatePassword()">توليد جديد</button>
+        </div>
+
+        <div class="tooltip">
+            <button onclick="copyPassword()">نسخ إلى الحافظة</button>
+            <span class="tooltip-text">تم النسخ!</span>
+        </div>
+
+        <br>
+        <button style="margin: 10px;" onclick="goBack()">العودة</button>
+    
+    </div>
+
+
+
+    
+    <script>
+
+
+        function goBack() {
+            window.history.back();
+        }
+
+
+
+
+
+const characterSets = {
+            uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            lowercase: 'abcdefghijklmnopqrstuvwxyz',
+            numbers: '0123456789',
+            symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+        };
+
+        function generatePassword() {
+            const length = parseInt(document.getElementById('length').value);
+            const options = {
+                uppercase: document.getElementById('uppercase').checked,
+                lowercase: document.getElementById('lowercase').checked,
+                numbers: document.getElementById('numbers').checked,
+                symbols: document.getElementById('symbols').checked
+            };
+
+            // التحقق من صحة الإدخال
+            if (!Object.values(options).some(v => v)) {
+                showError();
+                return;
+            }
+            hideError();
+
+            // إنشاء مجموعة الأحرف المطلوبة
+            let chars = '';
+            let requiredChars = '';
+            
+            Object.keys(options).forEach(key => {
+                if (options[key]) {
+                    chars += characterSets[key];
+                    requiredChars += getRandomChar(characterSets[key]);
+                }
+            });
+
+            // توليد الجزء العشوائي
+            const randomValues = new Uint32Array(length);
+            window.crypto.getRandomValues(randomValues);
+            
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += chars[randomValues[i] % chars.length];
+            }
+
+            // إضافة الأحرف المطلوبة
+            const shuffled = shuffleString(requiredChars + password);
+            updateStrength(shuffled);
+            document.getElementById('password').value = shuffled.slice(0, length);
+        }
+
+        function getRandomChar(str) {
+            const randomValues = new Uint32Array(1);
+            window.crypto.getRandomValues(randomValues);
+            return str[randomValues[0] % str.length];
+        }
+
+        function shuffleString(str) {
+            const array = str.split('');
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array.join('');
+        }
+
+        function updateStrength(password) {
+            let strength = 0;
+            
+            // حساب القوة بناء على التنوع والطول
+            if (password.length >= 12) strength += 40;
+            if (/[A-Z]/.test(password)) strength += 15;
+            if (/[a-z]/.test(password)) strength += 15;
+            if (/[0-9]/.test(password)) strength += 15;
+            if (/[^A-Za-z0-9]/.test(password)) strength += 15;
+
+            const strengthFill = document.getElementById('strengthFill');
+            strengthFill.style.width = Math.min(strength, 100) + '%';
+            strengthFill.style.background = strength < 40 ? '#e74c3c' :
+                strength < 70 ? '#f1c40f' : '#2ecc71';
+        }
+
+        function copyPassword() {
+            const passwordField = document.getElementById('password');
+            passwordField.select();
+            document.execCommand('copy');
+        }
+
+        function showError() {
+            document.getElementById('error').style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        // الأحداث
+        document.getElementById('length').addEventListener('input', function() {
+            document.getElementById('lengthValue').textContent = this.value;
+            generatePassword();
+        });
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', generatePassword);
+        });
+
+        // التوليد الأولي
+        generatePassword();
+    </script>
+</body>
+</html>

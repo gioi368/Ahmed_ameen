@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>محاكاة رمي النرد</title>
+    <style>
+        body {
+            direction: rtl;
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #2c3e50;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: #ecf0f1;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .dice {
+            width: 120px;
+            height: 120px;
+            background: #fff;
+            border-radius: 15px;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.5s ease-out;
+        }
+
+        .rolling {
+            animation: roll 1s ease-out;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(360deg) scale(1.2); }
+            100% { transform: rotate(720deg) scale(1); }
+        }
+
+        button {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39,174,96,0.4);
+        }
+
+        .history {
+            margin-top: 1.5rem;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dice" id="dice">?</div>
+        <button onclick="rollDice()">أرمي النرد</button>
+        <div class="history" id="history">السجلات: </div>
+    </div>
+
+    <script>
+        const diceElement = document.getElementById('dice');
+        const historyElement = document.getElementById('history');
+        let isRolling = false;
+
+        // دالة توليد الأرقام العشوائية العادلة
+        function getRandomDice() {
+            const cryptoArray = new Uint32Array(1);
+            window.crypto.getRandomValues(cryptoArray);
+            return (cryptoArray[0] % 6) + 1;
+        }
+
+        function rollDice() {
+            if (isRolling) return;
+            
+            isRolling = true;
+            diceElement.classList.add('rolling');
+            
+            // إزالة النتيجة المؤقتة أثناء الدوران
+            setTimeout(() => {
+                diceElement.textContent = '';
+            }, 100);
+
+            setTimeout(() => {
+                const result = getRandomDice();
+                diceElement.textContent = result;
+                diceElement.classList.remove('rolling');
+                isRolling = false;
+                
+                // تحديث السجلات
+                historyElement.textContent += ` ${result}`;
+                if (historyElement.textContent.split(' ').length > 10) {
+                    historyElement.textContent = 'السجلات: ' + 
+                        historyElement.textContent.split(' ').slice(-10).join(' ');
+                }
+            }, 1000);
+        }
+
+        // تهيئة أولية
+        diceElement.textContent = getRandomDice();
+    </script>
+</body>
+</html>

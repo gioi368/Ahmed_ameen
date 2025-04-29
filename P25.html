@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدقق التناظر</title>
+    <style>
+        /* CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>مدقق التناظر</h1>
+        <input type="text" id="inputText" placeholder="أدخل النص هنا...">
+        <button onclick="checkPalindrome()">تحقق</button>
+        <p id="result"></p>
+
+
+        <br>
+        <button  class="result" style="margin: 10px;" onclick="goBack()">العودة</button>
+    
+    </div>
+
+
+    <script>
+
+                
+function goBack() {
+            window.history.back();
+        }
+
+        // JavaScript
+        function checkPalindrome() {
+            // الحصول على النص المدخل من المستخدم
+            const inputText = document.getElementById('inputText').value;
+
+            // تنظيف النص: إزالة المسافات وعلامات الترقيم وتحويله إلى أحرف صغيرة
+            const cleanedText = inputText.replace(/[^\w]/g, '').toLowerCase();
+
+            // التحقق من التناظر
+            const isPalindrome = cleanedText === cleanedText.split('').reverse().join('');
+
+            // عرض النتيجة
+            const resultElement = document.getElementById('result');
+            if (isPalindrome) {
+                resultElement.textContent = "النص متناظر! 🎉";
+                resultElement.style.color = "#28a745";
+            } else {
+                resultElement.textContent = "النص غير متناظر. ❌";
+                resultElement.style.color = "#dc3545";
+            }
+        }
+    </script>
+</body>
+</html>

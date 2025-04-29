@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ساعة مثلثة</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: orange;
+            font-family: Arial, sans-serif;
+        }
+
+        .triangle-clock {
+            position: relative;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 260px solid #2a2a2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .time-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .time-segment {
+            background: blue;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 2rem;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+   .time-segment2 {
+            background:red;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 2rem;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+  
+  
+
+        .colon {
+            color: #fff;
+            font-size: 2rem;
+            margin: 0 5px;
+        }
+
+        .time-row {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="triangle-clock">
+        <div class="time-container">
+            <div class="time-row">
+                <div class="time-segment" id="hours">00</div>
+            </div>
+            <div class="time-row">
+                <div class="time-segment" id="minutes">00</div>
+                <div class="time-segment2" id="seconds">00</div>
+            </div>
+        </div>
+    </div>
+    <button onclick="goBack()">العودة</button>
+
+
+    <script>
+    function goBack() {
+    window.history.back();
+}
+        function updateClock() {
+            const now = new Date();
+            
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>

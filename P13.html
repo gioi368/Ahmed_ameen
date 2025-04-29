@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الملاحظات</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .note-input {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        #noteText {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        #saveBtn {
+            background: #27ae60;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        #saveBtn:hover {
+            background: #219a52;
+        }
+
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .note {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .note p {
+            margin: 0 0 15px 0;
+            line-height: 1.6;
+        }
+
+        .note-date {
+            font-size: 0.9em;
+            color: #95a5a6;
+            margin-bottom: 10px;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ملاحظاتي</h1>
+        
+        <div class="note-input">
+            <textarea id="noteText" placeholder="اكتب ملاحظتك هنا..."></textarea>
+            <button id="saveBtn" onclick="saveNote()">حفظ الملاحظة</button>
+        </div>
+
+        <div class="notes-container" id="notesContainer"></div>
+    
+        <br>
+        <button style="margin: 10px;"  onclick="goBack()">العودة</button>
+    
+    </div>
+    
+
+    <script>
+
+            
+function goBack() {
+            window.history.back();
+        }
+
+
+        let notes = JSON.parse(localStorage.getItem('notes')) || [];
+        
+        function saveNote() {
+            const noteText = document.getElementById('noteText').value.trim();
+            
+            if (!noteText) {
+                alert('الرجاء كتابة ملاحظة قبل الحفظ');
+                return;
+            }
+
+            const newNote = {
+                id: Date.now(),
+                text: noteText,
+                date: new Date().toLocaleDateString('ar-EG', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+
+            notes.push(newNote);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            renderNotes();
+            document.getElementById('noteText').value = '';
+        }
+
+        function deleteNote(id) {
+            notes = notes.filter(note => note.id !== id);
+            localStorage.setItem('notes', JSON.stringify(notes));
+            renderNotes();
+        }
+
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            container.innerHTML = '';
+            
+            notes.forEach(note => {
+                const noteEl = document.createElement('div');
+                noteEl.className = 'note';
+                noteEl.innerHTML = `
+                    <button class="delete-btn" onclick="deleteNote(${note.id})">حذف</button>
+                    <div class="note-date">${note.date}</div>
+                    <p>${note.text.replace(/\n/g, '<br>')}</p>
+                `;
+                container.appendChild(noteEl);
+            });
+        }
+
+        // التحميل الأولي للملاحظات
+        renderNotes();
+    </script>
+</body>
+</html>

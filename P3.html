@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cloor</title>
+    <link rel="stylesheet" href="styles.css">
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding-top: 50px;
+}
+
+button {
+  background: green;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+  
+  
+  </style>
+  
+  
+  
+</head>
+<body>
+    <button id="changeColorButton">Change the color</button>
+  <br>
+    <button onclick="goBack()">العودة</button>
+
+  
+  
+    <script >    
+  function goBack() {
+    window.history.back();
+}
+  
+  document.getElementById('changeColorButton').addEventListener('click', function() {
+    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+    document.body.style.backgroundColor = randomColor;
+});
+  
+  </script>
+</body>
+</html>

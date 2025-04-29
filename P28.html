@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج التخزين المحلي</title>
+    <style>
+        /* CSS */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input:invalid, textarea:invalid {
+            border-color: #ff4444;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>نموذج التخزين المحلي</h1>
+        <form id="myForm">
+            <div class="form-group">
+                <label for="name">الاسم:</label>
+                <input type="text" id="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">الرسالة:</label>
+                <textarea id="message" rows="4" required></textarea>
+            </div>
+
+            <button type="submit">حفظ</button>
+   
+        </form>
+   
+        <br>
+        <button  class="result" style="margin: 10px;" onclick="goBack()">العودة</button>
+    
+    </div>
+
+   
+    <script>
+
+                    
+function goBack() {
+            window.history.back();
+        }
+
+        // JavaScript
+        const form = document.getElementById('myForm');
+        const inputs = document.querySelectorAll('input, textarea');
+
+        // تحميل البيانات المحفوظة عند فتح الصفحة
+        function loadSavedData() {
+            inputs.forEach(input => {
+                const savedValue = localStorage.getItem(input.id);
+                if (savedValue) {
+                    input.value = savedValue;
+                }
+            });
+        }
+
+        // حفظ البيانات عند تغيير القيمة
+        inputs.forEach(input => {
+            input.addEventListener('input', (e) => {
+                localStorage.setItem(e.target.id, e.target.value);
+            });
+        });
+
+        // التحقق من الصحة وإرسال النموذج
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // التحقق من صحة جميع الحقول
+            let isFormValid = true;
+            inputs.forEach(input => {
+                if (!input.checkValidity()) {
+                    isFormValid = false;
+                    input.reportValidity();
+                }
+            });
+
+            if (isFormValid) {
+                alert('تم الحفظ بنجاح!');
+                localStorage.clear(); // مسح التخزين بعد الإرسال
+                form.reset();
+            }
+        });
+
+        // تحميل البيانات عند بدء التشغيل
+        loadSavedData();
+    </script>
+</body>
+</html>
